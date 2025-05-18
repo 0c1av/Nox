@@ -1,0 +1,9 @@
+admin
+login
+dashboard
+api
+uploads
+css
+js
+images
+imghp

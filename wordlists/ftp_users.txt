@@ -1,0 +1,10 @@
+anonymous
+ftp
+admin
+root
+user
+test
+guest
+info
+administrator
+sysadmin

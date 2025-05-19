@@ -10,13 +10,17 @@ RESET = "\033[0m"
 def load_tools():
 	from tools import nmap_scan, dirsearch, port_handler
 	from tools.ports.ftp import ftp_info, ftp_bf, ftp_login_exploit
+	from tools.ports.ssh import ssh_info
 	return {
 		"nmap_scan": nmap_scan.run,
 		"dirsearch": dirsearch.run,
 		"port_handler": port_handler.run,
+
 		"ftp_info": ftp_info.run,
 		"ftp_bf": ftp_bf.run,
-		"ftp_login_exploit": ftp_login_exploit.run
+		"ftp_login_exploit": ftp_login_exploit.run,
+
+		"ssh_info": ssh_info.run
 	}
 
 def describe_tools():

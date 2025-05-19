@@ -26,18 +26,6 @@
     "success": true
   },
   {
-    "target": "http://hhscholen.be:80",
-    "wordlist": "wordlists/common_dirs.txt",
-    "found_paths": [],
-    "success": true
-  },
-  {
-    "target": "https://hhscholen.be:443",
-    "wordlist": "wordlists/common_dirs.txt",
-    "found_paths": [],
-    "success": true
-  },
-  {
     "target": "http://ftp.dlptest.com:80",
     "wordlist": "wordlists/common_dirs.txt",
     "found_paths": [],
@@ -57,6 +45,18 @@
   },
   {
     "target": "https://ftp.dlptest.py:443",
+    "wordlist": "wordlists/common_dirs.txt",
+    "found_paths": [],
+    "success": true
+  },
+  {
+    "target": "http://hhscholen.be:80",
+    "wordlist": "wordlists/common_dirs.txt",
+    "found_paths": [],
+    "success": true
+  },
+  {
+    "target": "https://hhscholen.be:443",
     "wordlist": "wordlists/common_dirs.txt",
     "found_paths": [],
     "success": true

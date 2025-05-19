@@ -19,6 +19,11 @@ def run(target, port, usernames_path="wordlists/ftp_users.txt", passwords_path="
 	#debug
 	#usernames = ["anonymous", "admin"]
 	#passwords = ["pw", "test1", "test2"]
+	#return {
+	#	"success": True,
+	#	"username": "anonymous",
+	#	"password": "pw",
+	#}
 
 	for username in usernames:
 		for password in passwords:

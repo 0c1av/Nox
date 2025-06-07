@@ -1,0 +1,11 @@
+admin
+kip
+root
+user
+guest
+test
+administrator
+operator
+support
+service
+default

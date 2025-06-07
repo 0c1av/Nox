@@ -1,0 +1,17 @@
+admin
+kip
+password
+1234
+12345
+123456
+root
+toor
+guest
+pass
+123
+letmein
+qwerty
+abc123
+default
+test
+

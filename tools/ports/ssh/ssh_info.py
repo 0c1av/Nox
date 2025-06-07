@@ -3,6 +3,7 @@ import paramiko
 
 def run(target, port=22):
 	result = {
+		"success": False,
 		"banner": None,
 		"version": None,
 		"auth_methods": [],
@@ -22,6 +23,7 @@ def run(target, port=22):
 			result["banner"] = sock.recv(1024).decode(errors='ignore').strip()
 			if result["banner"].startswith("SSH-"):
 				result["version"] = result["banner"].split("-")[1]
+		result["success"] = True
 	except Exception as e:
 		result["error"] = f"Banner grab failed: {e}"
 		return result
@@ -51,6 +53,8 @@ def run(target, port=22):
 		result["compression"] = transport.get_security_options().compression
 
 		transport.close()
+
+		result["success"] = True
 
 	except Exception as e:
 		result["error"] = f"Paramiko error: {e}"

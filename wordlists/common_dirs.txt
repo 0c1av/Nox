@@ -1,5 +1,6 @@
 www
 mail
+webwisad/#/login?returnUrl=%23/
 ftp
 localhost
 webmail

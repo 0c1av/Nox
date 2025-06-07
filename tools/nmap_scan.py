@@ -1,13 +1,31 @@
 import subprocess
 import re
 
+
 def run(target):
 	#debug
-	#return [21, 22, 80, 406, 443, 464, 765, 1035, 1098, 1721, 2288, 2909, 3986, 5002, 5500, 5903, 6001, 6101, 10024, 28201, 41511]
+	#return [21, 22, 23, 25, 80, 3306, 406, 443, 464, 765, 1035, 1098, 1721, 2288, 2909, 3986, 5002, 5500, 5903, 6001, 6101, 10024, 28201, 41511]
 
+
+	supported_ports = [21, 22, 80, 443, 445, 8080, 8443]
+	slow_network_logged = False
+	output_lines = []
 
 	try:
-		output = subprocess.check_output(["nmap", "-sV", "-oG", "-", target], text=True)
+		process = subprocess.Popen(
+			["nmap", "-sV", "-oG", "-", target],
+			stdout=subprocess.PIPE,
+			stderr=subprocess.STDOUT,
+			text=True
+		)
+
+		for line in process.stdout:
+			output_lines.append(line)
+			if "RTTVAR has grown to over" in line and not slow_network_logged:
+				print("slow network")
+				slow_network_logged = True
+		process.wait()
+		output = ''.join(output_lines)
 		result = extract_ports(output)
 		return result
 	except Exception as e:

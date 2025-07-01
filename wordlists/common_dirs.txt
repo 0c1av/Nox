@@ -1,6 +1,7 @@
 www
 mail
 webwisad/#/login?returnUrl=%23/
+webouders/start.html#/login?returnUrl=%23/
 ftp
 localhost
 webmail
@@ -4988,3 +4989,5 @@ vo
 www.msk
 pc2
 schools
+webwisad/#/login?returnUrl=%23/
+webouders/start.html#/login?returnUrl=%23/

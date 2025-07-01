@@ -4,10 +4,9 @@ import re
 
 def run(target):
 	#debug
-	#return [21, 22, 23, 25, 80, 3306, 406, 443, 464, 765, 1035, 1098, 1721, 2288, 2909, 3986, 5002, 5500, 5903, 6001, 6101, 10024, 28201, 41511]
+	#return {"success": True, "ports": [2, 21, 22, 23, 25, 80, 3306, 406, 443, 464, 765, 1035, 1098, 1721, 2288, 2909, 3986, 5002, 5500, 5903, 6001, 6101, 10024, 28201, 41511]}
 
 
-	supported_ports = [21, 22, 80, 443, 445, 8080, 8443]
 	slow_network_logged = False
 	output_lines = []
 
@@ -26,10 +25,12 @@ def run(target):
 				slow_network_logged = True
 		process.wait()
 		output = ''.join(output_lines)
+		if not output.strip():
+			return {"success": False, "Error": "Nmap gave no output"}
 		result = extract_ports(output)
-		return result
+		return {"success": True, "ports": result}
 	except Exception as e:
-		return f"Error: {e}"
+		return {"success": False, "Error": str(e)}
 
 def extract_ports(output):
 	open_ports = []

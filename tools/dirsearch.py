@@ -2,54 +2,66 @@ import requests
 import json
 import os
 
-def run(target, wordlist_path="wordlists/common_dirs.txt"):
-	found = []
-	history_path = "tools/tool_history/dirsearch_history.json"
-
-	#load history
-	os.makedirs(os.path.dirname(history_path), exist_ok=True)
-	if not os.path.exists(history_path):
-		with open(history_path, "w") as f:
-			json.dump([], f)
-	with open(history_path, "r") as f:
+def run(target, tools, conn, port, wordlist_path="wordlists/common_dirs.txt"):
+	target = target.replace("http://", "").split(":")[0]  # crude but effective
+	#print(f"target: {target}")
+	target_res = tools["dbextract_json"](conn, "targets", "id", f"identifier='{target}'")
+	#print(f"target_res{target_res}")
+	if not target_res:
+		return {"success": False, "error": f"Target '{target}' not found in database."}
+	#print(f"target_res: {target_res}")
+	target_id = target_res[0]['id']
+	old_results = tools["dbextract_json"](conn, "scans", "scan_data", f"target_id = {target_id} and scan_type = 'port_handler'")
+	#print(f"old_results: {old_results}")
+	all_paths = []
+	for entry in old_results:
 		try:
-			history = json.load(f)
-		except json.JSONDecodeError:
-			history = []
+			data = json.loads(entry["scan_data"])
 
-	#check if scan already done
-	for entry in history:
-		if entry["target"] == target and entry["wordlist"] == wordlist_path and entry["success"] == True:
-			#print(f"[+] Succesfull scan already performed, copying results..")
-			return entry["found_paths"]
-		elif entry["target"] == target and entry["wordlist"] == wordlist_path and entry["success"] == False:
+			if "dirsearch_result" in data:
+				dir_res = data["dirsearch_result"]
+				if isinstance(dir_res, dict) and dir_res.get("success") and "paths" in dir_res:
+					paths = dir_res["paths"]
+					if isinstance(paths, list):
+						all_paths.extend(paths)
+		except (json.JSONDecodeError, KeyError, TypeError):
 			continue
-			#print(f"[+] Scan already performed unsuccesfully, trying again..")
+
+	#print(f"History paths: {all_paths}")
+	history = all_paths
+	#print(f"-----history: {history}")
+	if history:
+		#print("got history")
+		return {"success": True, "paths": history}
+	found = []
+
+
 
 	try:
 		with open(wordlist_path, "r") as f:
 			words = [line.strip() for line in f if line.strip()]
 
+		amount_words = 0
 		for word in words:
-			url = f"{target.rstrip('/')}/{word}"
+			amount_words += 1
+		#print(f"word_amount: {amount_words}")
+		count = 0
+		for word in words:
+			count += 1
+			if port in [80, 8080]:
+				url = f"http://{target.rstrip('/')}/{word}"
+			elif port in [443, 8443]:
+				url = f"https://{target.rstrip('/')}/{word}"
 			try:
 				response = requests.get(url, timeout=3)
 				if response.status_code < 400:
-					found.append(f"{url} ({response.status_code})")
+					found.append(f"{url}")
+				print(f"{count}/{amount_words}", end='\r')
 			except requests.RequestException:
 				continue
 
+		return {"success": True, "paths": found if found else None}
 
-		#If old scan unsuccessfull -> modify with successful
-		for i, entry in enumerate(history):
-			if entry["target"] == target and entry["wordlist"] == wordlist_path and entry["success"] == False:
-				del history[i]
-				break
-		history.append({"target": target, "wordlist": wordlist_path, "found_paths": found, "success": True})
-		with open(history_path, "w") as f:
-			json.dump(history, f, indent=2)
-
-		return found if found else None
 
 	except Exception as e:
 
@@ -57,4 +69,4 @@ def run(target, wordlist_path="wordlists/common_dirs.txt"):
 		with open(history_path, "w") as f:
 			json.dump(history, f, indent=2)
 
-		return [f"Error: {e}"]
+		return {"success": False, "Error": f"Error: {e}"}

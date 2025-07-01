@@ -1,7 +1,8 @@
 GREEN = "\033[32m"
 RED = "\033[31m"
 RESET = "\033[0m"
-def run(target, port, tools):
+def run(target, port, tools, conn):
+	print(f"[{port}]")
 
 	if port == 21:
 		results = {
@@ -204,13 +205,15 @@ def run(target, port, tools):
 		protocol = "https" if port in [443, 8443] else "http"
 		url = f"{protocol}://{target}:{port}"
 		print(f"  \-> Port_handler running dirsearch for {url}", end="\r")
-		results["dirsearch_result"] = tools["dirsearch"](url)
-		if results["dirsearch_result"]:
+
+		results["dirsearch_result"] = tools["dirsearch"](url, tools, conn, port)
+		dir_res = results["dirsearch_result"]
+
+		if isinstance(dir_res, dict) and dir_res.get("success") and dir_res.get("paths"):
 			print(f"  {GREEN}\->{RESET} Port_handler running dirsearch for {url}")
-			xss_targets = results["dirsearch_result"]
 			print(f"  \-> Port_handler running xss_scan", end="\r")
-			results["XSS_result"] = tools["xss_scan"](xss_targets)
-			if results["XSS_result"]["success"] == True:
+			results["XSS_result"] = tools["xss_scan"](dir_res["paths"], tools)
+			if results["XSS_result"].get("success"):
 				print(f"  {GREEN}\->{RESET} Port_handler running xss_scan")
 			else:
 				print(f"  {RED}\->{RESET} Port_handler running xss_scan")

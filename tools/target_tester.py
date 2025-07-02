@@ -38,7 +38,6 @@ def target_check(target):
 
 def run(target):
 	clean_target = validate_domain(target)
-	print(f"clean_target: {clean_target}")
 	if clean_target != target:
 		if target_check(clean_target):
 			print(f"[!] Target '{target}' includes a protocol prefix.")

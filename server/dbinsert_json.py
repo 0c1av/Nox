@@ -27,4 +27,4 @@ def run(db_conn, target_identifier, scan_type, scan_data_json):
 	""", (target_id, scan_type, json_str))
 
 	db_conn.commit()
-	print(f"[+] Stored {scan_type} scan for {target_identifier}")
+	#print(f"[+] Stored {scan_type} scan for {target_identifier}")

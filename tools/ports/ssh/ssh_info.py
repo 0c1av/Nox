@@ -1,4 +1,5 @@
 import socket
+
 import paramiko
 
 def run(target, port=22):
@@ -35,7 +36,8 @@ def run(target, port=22):
 	try:
 		sock = socket.create_connection((target, port), timeout=5)
 		transport = paramiko.Transport(sock)
-		transport.banner_timeout = 10
+		transport.banner_timeout = 15
+		time.sleep(0.5)
 		transport.start_client(timeout=10)
 
 		host_key = transport.get_remote_server_key()

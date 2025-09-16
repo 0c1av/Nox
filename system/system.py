@@ -8,13 +8,14 @@ import platform
 import subprocess
 from threading import Thread
 import argparse
+import tldextract
 
 GREEN = "\033[32m"
 BOLD = "\033[1m"
 RESET = "\033[0m"
 
 
-def choose_tool(history, current_target, main_ports, tools, supported_ports, handled_ports, conn):
+def choose_tool(history, current_target, main_ports, tools, supported_ports, handled_ports, conn, level):
 	if not history:
 		return {
 			"tool": "nmap_scan",
@@ -34,14 +35,21 @@ def choose_tool(history, current_target, main_ports, tools, supported_ports, han
 					handled_ports.add(port)
 					return {
 						"tool": "port_handler",
-						"params": {"target": current_target, "port": port, "tools": tools, "conn": conn}
+						"params": {"target": current_target, "port": port, "tools": tools, "conn": conn, "level": level}
 					}
 
 	else:
 		print(f"history: {history}")
 		return None
 
-def run(main_target, tools):
+def extract_domain(input_url):
+	extracted = tldextract.extract(input_url)
+	if extracted.domain and extracted.suffix:
+		return f"{extracted.domain}.{extracted.suffix}"
+	else:
+		return None
+
+def run(main_target, tools, level):
 
 	target_valid = tools["target_tester"](main_target)
 	if target_valid == "invalid":
@@ -49,6 +57,8 @@ def run(main_target, tools):
 		return
 	elif target_valid != "invalid" and target_valid != "valid":
 		main_target = target_valid
+
+	#print(f"Using: {main_target}")
 
 	conn = tools["dbconnection"]("open", None)
 	main_ports = []
@@ -63,7 +73,7 @@ def run(main_target, tools):
 	tool_res_sort = {"dirsearch_result", "XSS_result"}
 
 	while True:
-		tool_to_use = choose_tool(history, target, main_ports, tools, supported_ports, handled_ports, conn)
+		tool_to_use = choose_tool(history, target, main_ports, tools, supported_ports, handled_ports, conn, level)
 		if tool_to_use is None:
 			print("No tool to use")
 			print(f"History: {history}")
@@ -110,5 +120,5 @@ def run(main_target, tools):
 					i += 1
 
 		target = params["target"]
-		tools["dbinsert_json"](conn, target, tool_name, result)
+		tools["dbinsert_json"](conn, target, tool_name, result, level)
 		history.append({"tool": tool_name, "params": params, "result": result})

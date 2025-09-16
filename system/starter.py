@@ -1,14 +1,20 @@
+import threading
 import os
 import sys
 import time
 import json
+import logging
 
 import system.system as system
 import system.load_tools as load_tools
 
-params_path = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "system", "params.json"))
+import server.flask_api as flask_api
 
-def set_running_flag(flag: bool):
+
+#params_path = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "system", "params.json"))
+
+params_path = "system/params.json"
+def set_running_flag(flag: bool, target):
 	try:
 		with open(params_path, "r") as f:
 			params = json.load(f)
@@ -16,6 +22,8 @@ def set_running_flag(flag: bool):
 		params = {}
 
 	params["running"] = flag
+	params["target"] = target
+	print(f"Running: {params['running']}, Target: {params['target']}")
 
 	with open(params_path, "w") as f:
 		json.dump(params, f, indent=2)
@@ -30,15 +38,20 @@ def is_already_running():
 
 
 
-
-def run(target):
+def run(target, level = 1):
 	if is_already_running():
 		print("[!] Another instance is already running. Aborting.")
-		return
-	set_running_flag(True)
+		return "abort"
+	'''
+	flask_thread = threading.Thread(target=flask_api.run, daemon=True)
+	flask_thread.start()
+	'''
+
+	set_running_flag(True, target)
+
 
 	try:
-		print("Loading tools...", end="\r")
+		print("Loading tools", end="\r")
 		start_loading_time = time.time()
 		try:
 			tools = load_tools.run()
@@ -47,11 +60,11 @@ def run(target):
 			return
 		end_loading_time = time.time()
 		loading_time = end_loading_time - start_loading_time
-		print(f"loading time: {loading_time:.2f}s")
+		print(f"Loading tools ({loading_time:.2f}s)")
 
-		system.run(target, tools)
+		system.run(target, tools, level)
 	except KeyboardInterrupt:
 		print("\nKeyboardInterrupt: excitting.")
 
 	finally:
-		set_running_flag(False)
+		set_running_flag(False, target)

@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: nox-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 10tartesframboises!
+      MYSQL_DATABASE: pentool
+      MYSQL_USER: pentool_user
+      MYSQL_PASSWORD: 10tartesframboises!
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database.sql:/docker-entrypoint-initdb.d/database.sql
+
+  nox:
+    build: .
+    container_name: nox-app
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: db
+      DB_USER: pentool_user
+      DB_PASSWORD: 10tartesframboises!
+      DB_NAME: pentool
+    volumes:
+      - ./system:/app/system   # <- Add this line
+    command: python flask_server.py
+
+volumes:
+  db_data:

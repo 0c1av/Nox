@@ -21,7 +21,7 @@ def run(target):
 		for line in process.stdout:
 			output_lines.append(line)
 			if "RTTVAR has grown to over" in line and not slow_network_logged:
-				print("slow network")
+				print("[!] Slow network")
 				slow_network_logged = True
 		process.wait()
 		output = ''.join(output_lines)

@@ -1,0 +1,2 @@
+docker compose run --rm nox python main.py
+docker compose run --rm nox python monitor.py

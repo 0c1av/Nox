@@ -29,8 +29,8 @@ git clone https://github.com/0c1av/Nox.git
 cd Nox
 
 docker compose build
-
 ```
+Just paste the code here above in your terminal and you're ready to go and use Nox with the commands here beneath!
 ## Usage
 - Activate webserver available at http://localhost:5000/:
 ```bash

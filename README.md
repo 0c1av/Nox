@@ -1,7 +1,7 @@
 
 # Nox – Penetration Testing & Target Monitoring Tool
 
-Nox is a comprehensive penetration testing tool designed to scan targets, track related targets, and provide a web-based overview of all scans and results. It combines directory scanning, vulnerability testing (including XSS), and real-time monitoring in a single Dockerized solution.
+Nox is a comprehensive penetration testing tool designed to scan targets, track related targets, and provide a web-based overview of all scans and results. It combines directory scanning, vulnerability testing (XSS, SQL, ...), and real-time monitoring in a single Dockerized solution.
 
 
 
@@ -22,22 +22,34 @@ Nox is a comprehensive penetration testing tool designed to scan targets, track 
 ### Prerequisites
 Docker installed on your system (https://www.docker.com/get-started/)
 
+### Steps
+
+```bash
+git clone https://github.com/0c1av/Nox.git
+cd Nox
+
+docker-compose build
+
+```
 ## Usage
-Activate environment: 
+- Activate webserver available at http://localhost:5000/:
 ```bash
-source venv/bin/bash
+docker compose up
 ```
-Scan a single target: 
+
+- Scan a single target: 
 ```bash 
-python main.py
+docker compose run --rm nox python main.py
 ```
-Scan a target and related targets:
+
+- Scan a target and related targets:
 ```bash
-python monitor.py
+docker compose run --rm nox python main.py
 ```
-Start the web interface to see all targets and results:
+
+- Shut everything down:
 ```bash
-python flask_server.py
+docker compose down
 ```
 ## Legal Notice
 Nox is intended for ethical penetration testing only. Users must have permission to scan and test targets. Misuse of this tool may violate laws in your country.

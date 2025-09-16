@@ -28,7 +28,7 @@ Docker installed on your system (https://www.docker.com/get-started/)
 git clone https://github.com/0c1av/Nox.git
 cd Nox
 
-docker-compose build
+docker compose build
 
 ```
 ## Usage

@@ -1,4 +1,0 @@
-activate server:	docker compose up
-deactivate server port:	docker compose down
-run main program:	docker compose run --rm nox python main.py
-run monitor:		docker compose run --rm nox python monitor.py

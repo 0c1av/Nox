@@ -28,28 +28,28 @@ Docker installed on your system (https://www.docker.com/get-started/)
 git clone https://github.com/0c1av/Nox.git
 cd Nox
 
-docker compose build
+sudo docker compose build
 ```
 Just paste the code here above in your terminal and you're ready to go and use Nox with the commands here beneath!
 ## Usage
 - Activate webserver available at http://localhost:5000/:
 ```bash
-docker compose up
+sudo docker compose up
 ```
 
 - Scan a single target: 
 ```bash 
-docker compose run --rm nox python main.py
+sudo docker compose run --rm nox python main.py
 ```
 
 - Scan a target and related targets:
 ```bash
-docker compose run --rm nox python main.py
+sudo docker compose run --rm nox python main.py
 ```
 
 - Shut everything down:
 ```bash
-docker compose down
+sudo docker compose down
 ```
 ## Legal Notice
 Nox is intended for ethical penetration testing only. Users must have permission to scan and test targets. Misuse of this tool may violate laws in your country.
